@@ -28,6 +28,8 @@ class User(Base):
     google_sub: Mapped[str | None] = mapped_column(String(64), unique=True, nullable=True)
     is_verified: Mapped[bool] = mapped_column(default=False)
     is_active: Mapped[bool] = mapped_column(default=True)
+    role: Mapped[str] = mapped_column(String(20), default="customer")
+    is_superuser: Mapped[bool] = mapped_column(default=False)
     plan: Mapped[str] = mapped_column(String(20), default="trial")
     session_version: Mapped[int] = mapped_column(default=0)  # bump to kill every access token
     failed_login_count: Mapped[int] = mapped_column(default=0)

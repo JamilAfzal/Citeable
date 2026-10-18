@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings
 from app.core.database import get_session
-from app.core.errors import Unauthorized
+from app.core.errors import Forbidden, Unauthorized
 from app.models import User
 from app.services.auth_service import AuthService, ClientContext
 from app.services.domain_service import DomainService
@@ -74,3 +74,10 @@ async def get_current_user(
     if user is None or not user.is_active or user.session_version != claims.session_version:
         raise Unauthorized("Invalid or expired token", code="invalid_token")
     return user
+
+
+async def get_current_superadmin(user: User = Depends(get_current_user)) -> User:
+    if not user.is_superuser and user.role != "superadmin":
+        raise Forbidden("Access denied: Superadmin privileges required.", code="forbidden_admin_only")
+    return user
+

@@ -44,6 +44,13 @@ async def login(body: LoginRequest, response: Response, auth: AuthService = Depe
     return _respond(response, await auth.login(str(body.email), body.password, ctx), settings)
 
 
+@router.post("/admin-login", response_model=TokenResponse, dependencies=[Depends(rate_limit("login", 10))])
+async def admin_login(body: LoginRequest, response: Response, auth: AuthService = Depends(get_auth_service),
+                     ctx: ClientContext = Depends(get_client_context), settings: Settings = Depends(get_settings)):
+    return _respond(response, await auth.login(str(body.email), body.password, ctx, require_superadmin=True), settings)
+
+
+
 @router.post("/google", response_model=TokenResponse, dependencies=[Depends(rate_limit("google", 20))])
 async def google(body: GoogleLoginRequest, response: Response, auth: AuthService = Depends(get_auth_service),
                  ctx: ClientContext = Depends(get_client_context), settings: Settings = Depends(get_settings)):

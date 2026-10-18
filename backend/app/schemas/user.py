@@ -10,6 +10,8 @@ class UserOut(BaseModel):
     email: str
     full_name: str
     plan: str
+    role: str = "customer"
+    is_superuser: bool = False
     is_verified: bool
     has_password: bool
     google_linked: bool

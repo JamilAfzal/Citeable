@@ -64,7 +64,7 @@ class AuthService:
             await self.email.send_verification(user.email, await self._issue_one_time(user, "verify", timedelta(hours=self.s.verify_token_hours)))
 
     # ---------- login ----------
-    async def login(self, email: str, password: str, ctx: ClientContext) -> AuthSession:
+    async def login(self, email: str, password: str, ctx: ClientContext, require_superadmin: bool = False) -> AuthSession:
         user = await self.users.get_by_email(email)
         if user is None or user.password_hash is None:
             await self.passwords.dummy_verify()
@@ -87,11 +87,21 @@ class AuthService:
             raise Forbidden("This account is disabled", code="account_disabled")
         if self.s.require_verified_email and not user.is_verified:
             raise Forbidden("Verify your email before logging in", code="email_not_verified")
+        if require_superadmin and not user.is_superuser and user.role != "superadmin":
+            raise Forbidden("Access denied: Superadmin privileges required.", code="forbidden_admin_only")
 
         user.failed_login_count, user.locked_until = 0, None
         if self.passwords.needs_rehash(user.password_hash):
             user.password_hash = await self.passwords.hash(password)
         return await self._start_session(user, ctx)
+
+    async def impersonate(self, admin: User, target_user_id: uuid.UUID, ctx: ClientContext) -> AuthSession:
+        if not admin.is_superuser and admin.role != "superadmin":
+            raise Forbidden("Superadmin privileges required.", code="forbidden_admin_only")
+        target_user = await self.users.get(target_user_id)
+        if target_user is None or not target_user.is_active:
+            raise AppError("Customer account not found or inactive", code="user_not_found", status_code=404)
+        return await self._start_session(target_user, ctx)
 
     async def google_login(self, token: str, ctx: ClientContext) -> AuthSession:
         ident = await self.google.verify(token)

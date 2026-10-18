@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     database_url: str = "sqlite+aiosqlite:///./citeable.db"
     auto_create_tables: bool = True  # dev only; use Alembic in production
 
+    superadmin_email: str = "admin@citeable.com"
+    superadmin_password: str = "Admin12345!"
+    superadmin_name: str = "Super Admin"
+
     jwt_algorithm: str = "HS256"
     jwt_issuer: str = "citeable-api"
     jwt_audience: str = "citeable-web"
@@ -25,7 +29,7 @@ class Settings(BaseSettings):
     require_verified_email: bool = True
 
     frontend_url: str = "http://localhost:5173"
-    cors_origins: list[str] = ["http://localhost:5173"]
+    cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
     google_client_id: str = ""
 
     email_backend: str = "console"  # console | resend
