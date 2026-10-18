@@ -4,13 +4,24 @@
 
 # --- Environment & Secret Variables ---
 .env
+.env.*
 .env.local
 .env.*.local
 .env.development
 .env.test
 .env.production
 !.env.example
+!.env*.example
+!**/.env.example
 !.env.template
+!**/.env.template
+
+# --- Certificates & Private Keys ---
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
 
 # --- OS & System Files ---
 .DS_Store
@@ -43,9 +54,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+*.pid
+celerybeat.pid
 
 # ========================================================
-# Frontend (React / Vite / Node.js)
+# Frontend (React / Vite / Tailwind / Node.js)
 # ========================================================
 node_modules/
 */node_modules/
@@ -58,13 +71,8 @@ coverage/
 .vite/
 .eslintcache
 
-# Package manager lockfile fallbacks (keep package-lock.json / pnpm-lock.yaml / yarn.lock based on your tool)
-# yarn.lock
-# package-lock.json
-# pnpm-lock.yaml
-
 # ========================================================
-# Backend (Python / Django / FastAPI / Flask)
+# Backend (FastAPI / Python / SQLAlchemy / Pytest)
 # ========================================================
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -105,35 +113,58 @@ ENV/
 env.bak/
 venv.bak/
 
-# Unit test / coverage reports
+# Unit Tests & Coverage (pytest, pytest-asyncio, coverage)
+.pytest_cache/
+*/.pytest_cache/
+.coverage
+.coverage.*
 htmlcov/
 .tox/
 .nox/
-.coverage
-.coverage.*
-.cache
+.hypothesis/
 nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
 
-# Type Checking
+# Linters, Formatters & Type Checking
 .mypy_cache/
+*/.mypy_cache/
 .dmypy.json
 dmypy.json
+.ruff_cache/
+*/.ruff_cache/
 
-# Local Databases & Media
+# Databases & Local Storage (SQLite, PostgreSQL, Media/Uploads)
 *.sqlite
 *.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
 *.db
+*.db-wal
+*.db-shm
 db.sqlite3
 db.sqlite3-journal
 instance/
 media/
 uploads/
+*/media/
+*/uploads/
+
+# Database dumps & exports
+*.sql
+*.dump
+
+# Docker local data directories & local overrides
+pgdata/
+*/pgdata/
+postgres_data/
+*/postgres_data/
+docker-compose.override.yml
+*/docker-compose.override.yml
+docker-compose.*.override.yml
 
 # Jupyter Notebooks
 .ipynb_checkpoints
